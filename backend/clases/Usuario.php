@@ -1,23 +1,15 @@
 <?php
 
-class Usuario
-{
+require_once 'IBM.php';
 
+class Usuario implements IBM
+{
   public int $id;
   public string $nombre;
   public string $correo;
   public string $clave;
   public int $id_perfil;
   public string $perfil;
-
-  // function __construct($id, $nombre, $correo, $clave, $id_perfil, $perfil) {
-  //   $this->id = $id;
-  //   $this->nombre = $nombre;
-  //   $this->correo = $correo;
-  //   $this->clave = $clave;
-  //   $this->id_perfil = $id_perfil;
-  //   $this->perfil = $perfil;
-  // }
 
   // Retornará los atributos nombre, correo y clave en formato JSON
   public function ToJSON()
@@ -82,50 +74,36 @@ class Usuario
       $columns = "nombre, correo, clave, id_perfil";
       $values = ":nombre, :correo, :clave, :id_perfil";
       $query = "INSERT INTO `$table` ($columns) VALUES ($values)";
-      $pdoStatement_obj = $pdo->prepare($query);
+      $pdoStmt = $pdo->prepare($query);
 
-      if ($pdoStatement_obj) {
-
+      if ($pdoStmt) {
         $params = array(
-
-          // "id" => [
-          //   "value" => "$this->id",
-          //   "type" => PDO::PARAM_INT
-          // ],
-
           "nombre" => [
             "value" => "$this->nombre",
             "type" => PDO::PARAM_STR
           ],
-
           "correo" => [
             "value" => "$this->correo",
             "type" => PDO::PARAM_STR
           ],
-
           "clave" => [
             "value" => "$this->clave",
             "type" => PDO::PARAM_STR
           ],
-
           "id_perfil" => [
             "value" => "$this->id_perfil",
             "type" => PDO::PARAM_INT
-          ],
-
+          ]
         );
 
         foreach ($params as $paramKey => $paramValue) {
-          $pdoStatement_obj->bindParam(":$paramKey", $paramValue["value"], $paramValue["type"]);
+          $pdoStmt->bindParam(":$paramKey", $paramValue["value"], $paramValue["type"]);
         }
 
-        $result = $pdoStatement_obj->execute();
+        $result = $pdoStmt->execute();
 
         if ($result) {
-          echo "Usuario agregado exitosamente";
           $returnValue = true;
-        } else {
-          echo "No se pudo realizar la acción de agregar el usuario";
         }
 
       } else {
@@ -230,18 +208,10 @@ class Usuario
               }
               $usuario->perfil = $perfil_data['descripcion'];
               $returnValue = $usuario;
-            } // else {
-            //   echo "error.....\n\n";
-            // }
-          } // else {
-          // echo "error.....\n\n";
-          // }
-        } // else {
-        //   echo "error...\n\n";
-        // }
-      } // else {
-      //   echo "error.....\n\n";
-      // }
+            }
+          }
+        }
+      }
     } catch (PDOException $err) {
       echo $err->getMessage();
     }
@@ -249,4 +219,102 @@ class Usuario
     return $returnValue;
   }
 
+  // Modifica en la base de datos el registro coincidente con la instancia actual (comparar por id). Retorna true, si se pudo modificar, false, caso contrario.
+  public function Modificar()
+  {
+    $returnValue = false;
+    $dbname = "usuarios_test";
+    $host = "localhost";
+    $dsn = "mysql:host=$host;dbname=$dbname";
+    $user = "root";
+    $pw = "";
+
+    try {
+      $pdo = new PDO($dsn, $user, $pw);
+      $table = "usuarios";
+      $set = "`nombre`=:nombre,`correo`=:correo,`clave`=:clave,`id_perfil`=:id_perfil";
+      $query = "UPDATE `$table` SET $set WHERE `id`=:id";
+      $pdoStmt = $pdo->prepare($query);
+
+      if ($pdoStmt) {
+
+        $params = array(
+          "nombre" => [
+            "value" => "$this->nombre",
+            "type" => PDO::PARAM_STR
+          ],
+          "correo" => [
+            "value" => "$this->correo",
+            "type" => PDO::PARAM_STR
+          ],
+          "clave" => [
+            "value" => "$this->clave",
+            "type" => PDO::PARAM_STR
+          ],
+          "id_perfil" => [
+            "value" => "$this->id_perfil",
+            "type" => PDO::PARAM_INT
+          ],
+          "id" => [
+            "value" => "$this->id",
+            "type" => PDO::PARAM_INT
+          ]
+        );
+
+        foreach ($params as $paramKey => $paramValue) {
+          $pdoStmt->bindParam(":$paramKey", $paramValue["value"], $paramValue["type"]);
+        }
+
+        $result = $pdoStmt->execute();
+
+        if ($result && $pdoStmt->rowCount()) {
+          $returnValue = true;
+        }
+
+      } else {
+        echo "Error, no se pudo generar la sentencia preparada!";
+      }
+
+    } catch (PDOException $err) {
+      echo $err->getMessage();
+    }
+
+    return $returnValue;
+  }
+
+  // Eliminar (estático): elimina de la base de datos el registro coincidente con el id recibido cómo parámetro. Retorna true, si se pudo eliminar, false, caso contrario.
+  public static function Eliminar($id)
+  {
+    $returnValue = false;
+    $dbname = "usuarios_test";
+    $host = "localhost";
+    $dsn = "mysql:host=$host;dbname=$dbname";
+    $user = "root";
+    $pw = "";
+
+    try {
+      $pdo = new PDO($dsn, $user, $pw);
+      $table = "usuarios";
+      $query = "DELETE FROM `$table` WHERE `id`=:id";
+      $pdoStmt = $pdo->prepare($query);
+
+      if ($pdoStmt) {
+
+        $pdoStmt->bindParam(":id", $id, PDO::PARAM_INT);
+        $result = $pdoStmt->execute();
+
+        if ($result && $pdoStmt->rowCount()) {
+          $returnValue = true;
+        }
+
+      } else {
+        echo "Error, no se pudo generar la sentencia preparada!";
+      }
+
+    } catch (PDOException $err) {
+      echo $err->getMessage();
+    }
+
+    return $returnValue;
+  }
 }

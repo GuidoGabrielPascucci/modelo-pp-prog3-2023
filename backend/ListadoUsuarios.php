@@ -1,6 +1,4 @@
 <?php
-// ListadoUsuarios.php: (GET) Se mostrará el listado completo de los usuarios, exepto la clave (obtenidos de la base de datos) en una tabla (HTML con cabecera). Invocar al método TraerTodos.
-
 require_once './clases/Usuario.php';
 $usuarios = Usuario::TraerTodos();
 if ($usuarios) {
@@ -11,9 +9,13 @@ if ($usuarios) {
 
 function generarTabla($data) {
 
-  $table_style = "'width:80%;margin:20px auto;border:5px solid black;font-size:25px;font-family:system-ui;text-align:center;border-spacing:0px;font-weight:400'";
+  $table_style = "'width:80%;margin:20px auto;border:5px solid black;font-size:25px;font-family:system-ui;text-align:center;border-spacing:0px;font-weight:400;border-collapse:collapse;'";
   $thead_style = "'font-size:33px;color:#f0f0f0;background-color:#0064a9;height:100px'";
   $tbody_style = "'background-color:#eeeeee'";
+
+  function th_style($px) {
+    return "style='min-width:$px\\px;'";
+  }
 
   $rows = cargarDatos($data);
 
@@ -21,11 +23,11 @@ function generarTabla($data) {
   <table style=$table_style>
     <thead style=$thead_style>
       <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Correo</th>
-        <th>ID Perfil</th>
-        <th>Perfil</th>
+        <th " . th_style(70) . ">ID</th>
+        <th " . th_style(200) . ">Nombre</th>
+        <th " . th_style(200) . ">Correo</th>
+        <th " . th_style(170) . ">ID Perfil</th>
+        <th " . th_style(200) . ">Perfil</th>
       </tr>
     </thead>
     <tbody style=$tbody_style>
@@ -51,10 +53,10 @@ function cargarDatos($usuarios) {
       $usuario->perfil
     );
 
-    $tableRow = "<tr>";
+    $tableRow = "<tr style='height:60px;border:1px solid gray'>";
 
     foreach ($array_atributos as $atributo) {
-      $td = "<td>$atributo</td>";
+      $td = "<td style='border:1px solid gray'>$atributo</td>";
       $tableRow .= $td;
     }
 

@@ -1,6 +1,4 @@
 <?php
-// VerificarUsuarioJSON.php: (POST) Se recibe el parámetro usuario_json (correo y clave, en formato de cadena JSON) y se invoca al método TraerUno.
-// Se retornará un JSON que contendrá: éxito(bool) y mensaje(string) indicando lo acontecido.
 require_once './clases/Usuario.php';
 $usuario_json = file_get_contents('php://input');
 $obj = json_decode($usuario_json);

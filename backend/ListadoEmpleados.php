@@ -1,26 +1,21 @@
 <?php
-// ListadoEmpleados.php: (GET) Se mostrará el listado completo de los empleados (obtenidos de la base de datos) en una tabla (HTML con cabecera). Invocar al método TraerTodos.
-// Nota: preparar la tabla (HTML) con una columna extra para que muestre la imagen de la foto (50px X 50px).
-
 require_once './clases/Empleado.php';
-
 $empleados = Empleado::TraerTodos();
-echo json_encode($empleados, JSON_PRETTY_PRINT);
-
-die();
-
 if ($empleados) {
-
-  // echo generarTabla($usuarios);
+  echo generarTabla($empleados);
 } else {
   echo "No se ha podido traer la información, disculpe las molestias ocasionadas";
 }
 
 function generarTabla($data) {
 
-  $table_style = "'width:80%;margin:20px auto;border:5px solid black;font-size:25px;font-family:system-ui;text-align:center;border-spacing:0px;font-weight:400'";
+  $table_style = "'width:80%;margin:20px auto;border:5px solid black;font-size:25px;font-family:system-ui;text-align:center;border-spacing:0px;font-weight:400;border-collapse:collapse;'";
   $thead_style = "'font-size:33px;color:#f0f0f0;background-color:#0064a9;height:100px'";
   $tbody_style = "'background-color:#eeeeee'";
+
+  function th_style($px) {
+    return "style='min-width:$px\\px;'";
+  }
 
   $rows = cargarDatos($data);
 
@@ -28,11 +23,13 @@ function generarTabla($data) {
   <table style=$table_style>
     <thead style=$thead_style>
       <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Correo</th>
-        <th>ID Perfil</th>
-        <th>Perfil</th>
+        <th " . th_style(70) . ">ID</th>
+        <th " . th_style(200) . ">Nombre</th>
+        <th " . th_style(200) . ">Correo</th>
+        <th " . th_style(170) . ">ID Perfil</th>
+        <th " . th_style(200) . ">Perfil</th>
+        <th " . th_style(70) . ">Sueldo</th>
+        <th " . th_style(70) . ">Foto</th>
       </tr>
     </thead>
     <tbody style=$tbody_style>
@@ -44,24 +41,32 @@ function generarTabla($data) {
   return $table;
 }
 
-function cargarDatos($usuarios) {
+function cargarDatos($empleados) {
 
   $rows = "";
 
-  foreach ($usuarios as $usuario) {
+  foreach ($empleados as $empleado) {
 
     $array_atributos = array(
-      $usuario->id,
-      $usuario->nombre,
-      $usuario->correo,
-      $usuario->id_perfil,
-      $usuario->perfil
+      "id" => $empleado->id,
+      "nombre" => $empleado->nombre,
+      "correo" => $empleado->correo,
+      "id_perfil" => $empleado->id_perfil,
+      "perfil" => $empleado->perfil,
+      "sueldo" => $empleado->sueldo,
+      "foto" => $empleado->foto
     );
 
-    $tableRow = "<tr>";
+    $tableRow = "<tr style='height:60px;border:1px solid gray'>";
 
-    foreach ($array_atributos as $atributo) {
-      $td = "<td>$atributo</td>";
+    foreach ($array_atributos as $atributo_key => $atributo_value) {
+      $td = "<td style='border:1px solid gray'>";
+      if ($atributo_key != 'foto') {
+        $td .= $atributo_value;
+      } else {
+        $td .= "<img src='$atributo_value' style='width:200px;height:200px;object-fit:cover;'>";
+      }
+      $td .= "</td>";
       $tableRow .= $td;
     }
 

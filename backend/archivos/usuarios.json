@@ -18,5 +18,10 @@
         "nombre": "Alex",
         "correo": "alexys@gmail.com",
         "clave": "bdasd"
+    },
+    {
+        "nombre": "Sergio",
+        "correo": "panque10@tigre.es",
+        "clave": "massalarios25"
     }
 ]

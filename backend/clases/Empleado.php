@@ -1,12 +1,18 @@
 <?php
-
 require_once 'Usuario.php';
 require_once 'ICRUD.php';
 
 class Empleado extends Usuario implements ICRUD
 {
-  public array|string $foto;
-  public float $sueldo;
+  // public float $sueldo;
+  // public array|string $foto;
+
+  public function __construct($nombre = null, $correo = null, $clave = null, $id_perfil = null, $perfil = null, $sueldo = null, $foto = null, $id = null)
+  {
+   parent::__construct($nombre, $correo, $clave, $id_perfil, $perfil, $id);
+   $this->sueldo = $sueldo;
+   $this->foto = $foto;
+  }
 
   // Agrega, a partir de la instancia actual, un nuevo registro en la tabla empleados (id,nombre, correo, clave, id_perfil, foto y sueldo), de la base de datos usuarios_test. Retorna true, si se pudo agregar, false, caso contrario.
   // Nota: La foto guardarla en “./backend/empleados/fotos/”, con el nombre formado por el nombre punto tipo punto hora, minutos y segundos del alta (Ejemplo: juan.105905.jpg).
@@ -17,7 +23,7 @@ class Empleado extends Usuario implements ICRUD
     $host = "localhost";
     $dsn = "mysql:host=$host;dbname=$dbname";
     $user = "root";
-    $pw = "";
+    $pw = "root404";
 
     try {
       $pdo = new PDO($dsn, $user, $pw);
@@ -70,7 +76,7 @@ class Empleado extends Usuario implements ICRUD
               "foto" => [
                 "value" => $file_full_path,
                 "type" => PDO::PARAM_STR,
-                "maxLength" => 50
+                "maxLength" => 75
               ],
               "sueldo" => [
                 "value" => $this->sueldo,
@@ -107,69 +113,78 @@ class Empleado extends Usuario implements ICRUD
     $host = "localhost";
     $dsn = "mysql:host=$host;dbname=$dbname";
     $user = "root";
-    $pw = "";
+    $pw = "root404";
 
     try {
       $pdo = new PDO($dsn, $user, $pw);
       $table = "empleados";
-      $set = "`nombre`=:nombre,`correo`=:correo,`clave`=:clave,`id_perfil`=:id_perfil,`foto`=:foto,`sueldo`=:sueldo";
-      $query = "UPDATE `$table` SET $set WHERE `id`=:id";
+      $set = "nombre=:nombre,correo=:correo,clave=:clave,id_perfil=:id_perfil,foto=:foto,sueldo=:sueldo";
+      $query = "UPDATE $table SET $set WHERE id=:id";
       $pdoStmt = $pdo->prepare($query);
 
       if ($pdoStmt) {
 
-        $params = array(
-          "nombre" => [
-            "value" => $this->nombre,
-            "type" => PDO::PARAM_STR,
-            "maxLenght" => 30
-          ],
-          "correo" => [
-            "value" => $this->correo,
-            "type" => PDO::PARAM_STR,
-            "maxLenght" => 50
-          ],
-          "clave" => [
-            "value" => $this->clave,
-            "type" => PDO::PARAM_STR,
-            "maxLenght" => 8
-          ],
-          "id_perfil" => [
-            "value" => $this->id_perfil,
-            "type" => PDO::PARAM_INT,
-            "maxLenght" => 10
-          ],
-          "foto" => [
-            "value" => $this->foto,
-            "type" => PDO::PARAM_STR,
-            "maxLenght" => 50
-          ],
-          "sueldo" => [
-            "value" => $this->sueldo,
-            "type" => PDO::PARAM_STR,
-            "maxLenght" => null
-          ],
-          "id" => [
-            "value" => $this->id,
-            "type" => PDO::PARAM_INT,
-            "maxLenght" => 10
-          ]
-        );
+        $upload_dir = "./empleados/fotos/";
+        $date = new DateTime('now', new DateTimeZone('GMT-3'));
+        $pathinfo = pathinfo($this->foto['name']);
+        $name = $this->nombre;
+        $time = $date->format('His');
+        $extension = $pathinfo['extension'];
+        $filename = "$name.$time.$extension";
+        $file_full_path = $upload_dir . $filename;
+        $success = move_uploaded_file($this->foto['tmp_name'], $file_full_path);
 
-        foreach ($params as $paramKey => $paramValue) {
-          $pdoStmt->bindParam(":$paramKey", $paramValue["value"], $paramValue["type"], $paramValue["maxLength"]);
+        if ($success) {
+          
+          $params = array(
+            "nombre" => [
+              "value" => $this->nombre,
+              "type" => PDO::PARAM_STR,
+              "maxLength" => 30
+            ],
+            "correo" => [
+              "value" => $this->correo,
+              "type" => PDO::PARAM_STR,
+              "maxLength" => 50
+            ],
+            "clave" => [
+              "value" => $this->clave,
+              "type" => PDO::PARAM_STR,
+              "maxLength" => 8
+            ],
+            "id_perfil" => [
+              "value" => $this->id_perfil,
+              "type" => PDO::PARAM_INT,
+              "maxLength" => 10
+            ],
+            "foto" => [
+              "value" => $file_full_path,
+              "type" => PDO::PARAM_STR,
+              "maxLength" => 75
+            ],
+            "sueldo" => [
+              "value" => $this->sueldo,
+              "type" => PDO::PARAM_STR,
+              "maxLength" => null
+            ],
+            "id" => [
+              "value" => $this->id,
+              "type" => PDO::PARAM_INT,
+              "maxLength" => 10
+            ]
+          );
+  
+          foreach ($params as $paramKey => $paramValue) {
+            $pdoStmt->bindParam(":$paramKey", $paramValue["value"], $paramValue["type"], $paramValue["maxLength"]);
+          }
+  
+          $result = $pdoStmt->execute();
+  
+          if ($result && $pdoStmt->rowCount()) {
+            $returnValue = true;
+          }
         }
-
-        $result = $pdoStmt->execute();
-
-        if ($result && $pdoStmt->rowCount()) {
-          $returnValue = true;
-        }
-
-      } else {
-        echo "Error, no se pudo generar la sentencia preparada!";
       }
-
     } catch (PDOException $err) {
       echo $err->getMessage();
     }
@@ -185,7 +200,7 @@ class Empleado extends Usuario implements ICRUD
     $host = "localhost";
     $dsn = "mysql:host=$host;dbname=$dbname";
     $user = "root";
-    $pw = "";
+    $pw = "root404";
 
     try {
       $pdo = new PDO($dsn, $user, $pw);
@@ -221,7 +236,7 @@ class Empleado extends Usuario implements ICRUD
     $host = "localhost";
     $dsn = "mysql:host=$host;dbname=$dbname";
     $user = "root";
-    $pw = "";
+    $pw = "root404";
 
     try {
       $pdo = new PDO($dsn, $user, $pw);

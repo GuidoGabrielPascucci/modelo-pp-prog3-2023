@@ -1,0 +1,68 @@
+GET http://localhost/modelo-pp-prog3-2023/backend/ListadoEmpleados.php
+
+###
+POST http://localhost/modelo-pp-prog3-2023/backend/AltaEmpleado.php
+Content-Type: multipart/form-data; boundary=???
+
+--???
+Content-Disposition: form-data; name="nombre"
+
+Schiaretti
+--???
+Content-Disposition: form-data; name="correo"
+
+micordobaquerida@cba.cor
+--???
+Content-Disposition: form-data; name="clave"
+
+cba207
+--???
+Content-Disposition: form-data; name="id_perfil"
+
+1
+--???
+Content-Disposition: form-data; name="sueldo"
+
+505505
+--???
+Content-Disposition: form-data; name="foto"; filename="linux.jpeg"
+Content-Type: image/jpeg
+
+< /home/guido/Descargas/linux.jpeg
+--???
+
+###
+POST http://localhost/modelo-pp-prog3-2023/backend/ModificarEmpleado.php
+Content-Type: multipart/form-data; boundary=???
+
+--???
+Content-Disposition: form-data; name="empleado_json"
+
+{
+  "id": 40,
+  "nombre": "Diego Armando",
+  "correo": "eldiegote@diez.com",
+  "clave": "die10",
+  "id_perfil": 1,
+  "sueldo": 101010,
+  "pathFoto": "path-dieguito"
+}
+
+--???
+Content-Disposition: form-data; name="foto"; filename="nietzsche.jpeg"
+Content-Type: image/jpeg
+
+< /home/guido/Descargas/nietzsche.jpeg
+--???
+
+###
+POST http://localhost/modelo-pp-prog3-2023/backend/EliminarEmpleado.php
+Content-Type: multipart/form-data; boundary=???
+
+--???
+Content-Disposition: form-data; name="id"
+
+4
+--???
+
+###

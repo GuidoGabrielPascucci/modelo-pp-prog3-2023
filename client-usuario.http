@@ -1,0 +1,81 @@
+GET http://localhost/modelo-pp-prog3-2023/backend/ListadoUsuarios.php
+
+###
+GET http://localhost/modelo-pp-prog3-2023/backend/ListadoUsuariosJSON.php
+
+###
+POST http://localhost/modelo-pp-prog3-2023/backend/AltaUsuario.php
+Content-Type: multipart/form-data; boundary=???
+
+--???
+Content-Disposition: form-data; name="nombre"
+
+Javier
+--???
+Content-Disposition: form-data; name="correo"
+
+javi_libertario@hayek.pro
+--???
+Content-Disposition: form-data; name="clave"
+
+javito44
+--???
+Content-Disposition: form-data; name="id_perfil"
+
+2
+--???
+
+###
+POST http://localhost/modelo-pp-prog3-2023/backend/AltaUsuarioJSON.php
+Content-Type: multipart/form-data; boundary=???
+
+--???
+Content-Disposition: form-data; name="nombre"
+
+Sergio
+--???
+Content-Disposition: form-data; name="correo"
+
+panque10@tigre.es
+--???
+Content-Disposition: form-data; name="clave"
+
+massalarios25
+--???
+
+###
+POST http://localhost/modelo-pp-prog3-2023/backend/ModificarUsuario.php
+Content-Type: application/json
+
+{
+  "id": 45,
+  "nombre": "Oski",
+  "correo": "dasdsd@gg.poker",
+  "clave": "tfs34",
+  "id_perfil": 3
+}
+
+###
+POST http://localhost/modelo-pp-prog3-2023/backend/EliminarUsuario.php
+Content-Type: multipart/form-data; boundary=???
+
+--???
+Content-Disposition: form-data; name="id"
+
+3
+--???
+Content-Disposition: form-data; name="accion"
+
+borrar
+--???
+
+###
+POST http://localhost/modelo-pp-prog3-2023/backend/VerificarUsuarioJSON.php
+Content-Type: application/json
+
+{
+  "correo": "massita@todos.cfk",
+  "clave": "tigre234"
+}
+
+###
